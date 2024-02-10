@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import no.uio.ifi.in2000.abdullau.oblig2.data.alpacas.AlpacaPartiesDataSource
 import no.uio.ifi.in2000.abdullau.oblig2.data.alpacas.AlpacaPartiesRepository
 import no.uio.ifi.in2000.abdullau.oblig2.model.alpacas.PartyInfo
 
@@ -21,13 +20,13 @@ class HomeScreenViewModel: ViewModel() {
 
     private val repository: AlpacaPartiesRepository = AlpacaPartiesRepository()
 
-    private val _partyInfoUIState = MutableStateFlow(PartyInfoUIState())
-    val partyinfoUiState: StateFlow<PartyInfoUIState> = _partyInfoUIState.asStateFlow()
+    private val _partyInfo = MutableStateFlow(PartyInfoUIState())
+    val partyinfo: StateFlow<PartyInfoUIState> = _partyInfo.asStateFlow()
 
     init {
         viewModelScope.launch{
-            _partyInfoUIState.update {
-                it.copy(
+            _partyInfo.update { partyinfoUiState ->
+                partyinfoUiState.copy(
                     partyinfoes = repository.getParties()
                 )
             }
