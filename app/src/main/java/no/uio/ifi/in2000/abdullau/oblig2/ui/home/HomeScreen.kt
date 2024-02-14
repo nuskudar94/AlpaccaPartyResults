@@ -2,6 +2,7 @@
 
 package no.uio.ifi.in2000.abdullau.oblig2.ui.home
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -20,8 +21,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.Text as Material3Text
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -34,13 +35,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.constraintlayout.widget.ConstraintLayout
+
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import no.uio.ifi.in2000.abdullau.oblig2.model.alpacas.Party
 
 @Composable
-fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = viewModel()){
+fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = viewModel(),
+                navController: NavController
+){
 
     val partyInfo by homeScreenViewModel.partyinfo.collectAsState()
 
@@ -50,7 +54,11 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = viewModel()){
                 PartyCard(party = Party(party.id,party.name,party.leader,party.img,party.color,party.description),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp))
+                        .padding(16.dp),
+                    onClick = {
+                        navController.navigate("party_screen/${party.id}")
+                        Log.d("PartyScreen", "Navigating to PartyScreen with partyID: ${party.id}")
+                })
             }
         }
     }
@@ -67,7 +75,7 @@ fun PartyCard(
         modifier = modifier
             .defaultMinSize(minHeight = 120.dp)
             .fillMaxWidth()
-            .clickable { onClick() }
+            .clickable { onClick()  }
             .padding(16.dp),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation()
@@ -87,14 +95,18 @@ fun PartyCard(
                 alignment = Alignment.CenterStart
             )
             Spacer(modifier = Modifier.height(8.dp))
-            Text(
+            Material3Text(
                 text ="Party Name: ${party.name}",
                 fontWeight = FontWeight.Bold,
-                fontSize = 18.sp
+                fontSize = 18.sp,
+                color = Color.DarkGray,
+                onTextLayout = {}
             )
-            Text(
+            Material3Text(
                 text = "Leader: ${party.leader}",
-                fontSize = 14.sp
+                fontSize = 14.sp,
+                color = Color.Black,
+                onTextLayout = {}
             )
         }
         Box(

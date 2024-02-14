@@ -25,7 +25,7 @@ class AlpacaPartiesRepository() {
     }
 
     suspend fun getParty(id: String): Party? {
-        val parties = getParties().firstOrNull()
-        return parties?.parties?.find { party -> party.id == id }
+        val parties = getParties()
+        return parties.flatMap { it.parties }.find { it.id == id }
     }
 }
