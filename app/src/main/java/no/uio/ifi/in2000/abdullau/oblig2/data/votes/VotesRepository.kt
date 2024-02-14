@@ -1,13 +1,31 @@
 package no.uio.ifi.in2000.abdullau.oblig2.data.votes
 
-class VotesRepository {
+import no.uio.ifi.in2000.abdullau.oblig2.model.votes.District
 
- /*
+
+
+
  class VotesRepository(
-    private val individualVotesDataSource: IndividualVotesDataSource,
-    private val aggregatedVotesDataSource: AggregatedVotesDataSource
-) {
 
+) {
+     private val individualVotesDataSource = IndividualVotesDataSource()
+     private val aggregatedVotesDataSource = AggregatedVotesDataSource()
+     suspend fun getVotesForPartyInDistrict(district: District, partyId: String): Int {
+         return when (district) {
+             District.DISTRICT1 -> {
+                 val district1Votes = individualVotesDataSource.getVotesFromDistrict1()
+                 district1Votes.numberOfVotesForParty - (district1Votes.alpacaPartyId == partyId).let { if (it) 1 else 0 }
+             }
+             District.DISTRICT2 -> {
+                 val district2Votes = individualVotesDataSource.getVotesFromDistrict2()
+                 district2Votes.numberOfVotesForParty - (district2Votes.alpacaPartyId == partyId).let { if (it) 1 else 0 }
+             }
+             District.DISTRICT3 -> aggregatedVotesDataSource.getVotesFromDistrict3().numberOfVotesForParty
+         }
+     }
+
+
+    /*
     suspend fun getVotesForPartyInDistrict(district: District, partyId: String): Int? {
         return when (district) {
             District.DISTRICT1 -> individualVotesDataSource.getVotesFromDistrict1().alpacaPartyId == partyId
@@ -21,8 +39,10 @@ class VotesRepository {
             }
         }?.get(partyId)
     }
+    */
+
 }
-  */
+
 
     /*
         package no.uio.ifi.in2000.abdullau.oblig2.data.votes
@@ -64,7 +84,35 @@ class VotesRepository(
         return districtVotes.partyVotes
     }
 }
+
+      class VotesRepository(
+    private val individualVotesDataSource: IndividualVotesDataSource,
+    private val aggregatedVotesDataSource: AggregatedVotesDataSource
+) {
+
+    suspend fun getVotesForPartyInDistrict(district: District, partyId: String): Int {
+        return when (district) {
+            District.DISTRICT1 -> {
+                val district1Votes = individualVotesDataSource.getVotesFromDistrict1()
+                district1Votes.numberOfVotesForParty - (district1Votes.alpacaPartyId == partyId).let { if (it) 1 else 0 }
+            }
+            District.DISTRICT2 -> {
+                val district2Votes = individualVotesDataSource.getVotesFromDistrict2()
+                district2Votes.numberOfVotesForParty - (district2Votes.alpacaPartyId == partyId).let { if (it) 1 else 0 }
+            }
+            District.DISTRICT3 -> aggregatedVotesDataSource.getVotesFromDistrict3().numberOfVotesForParty
+        }
+    }
+}
+
+enum class District { DISTRICT1, DISTRICT2, DISTRICT3 }
+
+@Serializable
+data class DistrictVotes(
+    val district: District,
+    val alpacaPartyId: String,
+    val numberOfVotesForParty: Int
+)
      */
 
 
-}
