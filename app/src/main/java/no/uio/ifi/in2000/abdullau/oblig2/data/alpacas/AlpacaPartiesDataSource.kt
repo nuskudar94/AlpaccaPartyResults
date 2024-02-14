@@ -27,12 +27,5 @@ class AlpacaPartiesDataSource {
 
         return@withContext listOf(PartiesInfo)
     }
-    /*
-    fun main() = runBlocking {
-        val alpacaParties = fetchAlpacaParties()
-        alpacaParties.parties.forEach { party ->
-            println("Party ID: ${party.id}, Party Name: ${party.name}, Party Leader: ${party.leader}, Party Image: ${party.img}, Party Color: ${party.color}, Description: ${party.description}")
-        }
 
-     */
     }
