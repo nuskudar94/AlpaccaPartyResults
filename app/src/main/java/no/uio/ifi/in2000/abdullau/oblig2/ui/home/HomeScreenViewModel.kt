@@ -33,23 +33,30 @@ class HomeScreenViewModel: ViewModel() {
     private val _voteInfo = MutableStateFlow(VotesInfoUIState())
     val voteinfo : StateFlow<VotesInfoUIState> = _voteInfo.asStateFlow()
 
+    private val _selectedDistrict = MutableStateFlow<District?>(null)
+    val selectedDistrict: StateFlow<District?> = _selectedDistrict.asStateFlow()
+
+
+    fun loadPartyVotes(district: District) {
+        viewModelScope.launch {
+            val votesMap=repository.getPartiesWithVotes(district)
+            _voteInfo.update {
+                    currentState-> currentState.copy(
+                voteinfoes = votesMap
+            )
+            }
+        }
+    }
+    fun selectDistrict(district: District) {
+        _selectedDistrict.value = district
+        loadPartyVotes(district)
+    }
+
     init {
-        val districts = listOf(District.DISTRICT1, District.DISTRICT2, District.DISTRICT3)
         viewModelScope.launch{
             _partyInfo.update { partyinfoUiState ->
                 partyinfoUiState.copy(
                     partyinfoes = repository.getParties()
-
-                )
-            }
-            _voteInfo.update {votesInfoUiState ->
-                val voteinfoes = mutableMapOf<String, Int>()
-                for (district in districts) {
-                    voteinfoes.putAll(repository.getPartiesWithVotes(district = district))
-                }
-                votesInfoUiState.copy(
-                    voteinfoes = voteinfoes
-
                 )
             }
         }

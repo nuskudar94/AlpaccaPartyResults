@@ -1,6 +1,7 @@
 package no.uio.ifi.in2000.abdullau.oblig2.data.votes
 
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
@@ -21,21 +22,23 @@ class AggregatedVotesDataSource {
     }
 
 
-    suspend fun getVotesFromDistrict3(): DistrictVotes {
+    suspend fun getVotesFromDistrict3(): List<DistrictVotes> {
         val url = "https://www.uio.no/studier/emner/matnat/ifi/IN2000/v24/obligatoriske-oppgaver/district3.json"
         val json = Json { ignoreUnknownKeys = true }
-        val response: District3Response = client.get(url){
-            parameter("key", "value" )
-        }.bodyAsText().let { json.decodeFromString(it) }
+        val response: District3Response = client.get(url).body()
+
+
 
         // Transform the response to DistrictVotes format
-        return DistrictVotes(
+        return response.parties.map{ partyVote ->
+            DistrictVotes(
             district = District.DISTRICT3,
-            alpacaPartyId = response.parties[0].partyId,
-            numberOfVotesForParty = response.parties.sumOf { it.votes }
+            alpacaPartyId = partyVote.partyId,
+            numberOfVotesForParty = partyVote.votes
         )
     }
 
+        }
     @Serializable
     data class District3Response(
         val parties: List<District3Response.PartyVote>

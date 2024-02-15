@@ -8,12 +8,17 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import no.uio.ifi.in2000.abdullau.oblig2.model.alpacas.PartyInfo
 import no.uio.ifi.in2000.abdullau.oblig2.data.alpacas.AlpacaPartiesDataSource
+import no.uio.ifi.in2000.abdullau.oblig2.data.votes.AggregatedVotesDataSource
+import no.uio.ifi.in2000.abdullau.oblig2.data.votes.IndividualVotesDataSource
 import no.uio.ifi.in2000.abdullau.oblig2.data.votes.VotesRepository
 import no.uio.ifi.in2000.abdullau.oblig2.model.alpacas.Party
 import no.uio.ifi.in2000.abdullau.oblig2.model.votes.District
 
 class AlpacaPartiesRepository() {
-    private val votesRepository = VotesRepository()
+    private val individualVotesDataSource = IndividualVotesDataSource()
+    private val aggregatedVotesDataSource = AggregatedVotesDataSource()
+
+    private val votesRepository = VotesRepository(individualVotesDataSource, aggregatedVotesDataSource)
     private val dataSource = AlpacaPartiesDataSource()
 
     private  val party =MutableStateFlow<List<Party>>(listOf())

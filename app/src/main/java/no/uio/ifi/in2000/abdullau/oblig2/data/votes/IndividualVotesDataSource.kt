@@ -23,8 +23,9 @@ class IndividualVotesDataSource() {
         }
     }
 
-    suspend fun getVotesFromDistrict1(): DistrictVotes {
-        val url = "https://www.uio.no/studier/emner/matnat/ifi/IN2000/v24/obligatoriske-oppgaver/district1.json"
+    suspend fun getVotesFromDistrict1(): List<DistrictVotes> {
+        val url =
+            "https://www.uio.no/studier/emner/matnat/ifi/IN2000/v24/obligatoriske-oppgaver/district1.json"
 
         val response: List<District1Response> = client.get(url).body()
 
@@ -35,29 +36,32 @@ class IndividualVotesDataSource() {
         //val partiesVotes = district1ResponseList.groupBy { it.partyId }.mapValues { it.size }
         //val partiesVotes = response.votes.groupBy { it.key }.mapValues { it.value.sum() }
 
-        val totalVotes = response.groupingBy { it.id }.eachCount()
+        val totalVotes = response.groupBy { it.id }.mapValues { it.value.size }
 
         // Transform the response to DistrictVotes format
-        return DistrictVotes(
-            district = District.DISTRICT1,
-            alpacaPartyId = totalVotes.maxByOrNull { it.value }?.key ?: "",
-            numberOfVotesForParty = totalVotes.values.sum()
-        )
+        return totalVotes.map { (partyId, count) ->
+            DistrictVotes(
+                district = District.DISTRICT1,
+                alpacaPartyId = partyId,
+                numberOfVotesForParty = count
+            )
+        }
     }
-
-    suspend fun getVotesFromDistrict2(): DistrictVotes {
+    suspend fun getVotesFromDistrict2(): List<DistrictVotes> {
         val url = "https://www.uio.no/studier/emner/matnat/ifi/IN2000/v24/obligatoriske-oppgaver/district2.json"
         //val json = Json { ignoreUnknownKeys = true }
         val response: List<District2Response> = client.get(url).body()
 
-        val totalVotes = response.groupingBy { it.id }.eachCount()
+        val totalVotes = response.groupBy { it.id }.mapValues { it.value.size }
 
         // Transform the response to DistrictVotes format
-        return DistrictVotes(
-            district = District.DISTRICT2,
-            alpacaPartyId = totalVotes.maxByOrNull { it.value }?.key ?: "",
-            numberOfVotesForParty = totalVotes.values.sum()
-        )
+        return totalVotes.map { (partyId, count) ->
+            DistrictVotes(
+                district = District.DISTRICT2,
+                alpacaPartyId = partyId,
+                numberOfVotesForParty = count
+            )
+        }
     }
 
     // Define data classes to match the JSON structure from each endpoint

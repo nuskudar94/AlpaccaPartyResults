@@ -4,6 +4,7 @@ package no.uio.ifi.in2000.abdullau.oblig2.ui.home
 
 import Vote
 import VoteList
+import VoteRow
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -55,51 +56,69 @@ import no.uio.ifi.in2000.abdullau.oblig2.model.votes.District
 @Composable
 fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = viewModel(),
                 navController: NavController
-){
+) {
     val districts = listOf(District.DISTRICT1, District.DISTRICT2, District.DISTRICT3)
-    var selectedDistrict by remember { mutableStateOf(District.DISTRICT1)}
+    var selectedDistrict by remember { mutableStateOf(District.DISTRICT1) }
     val partyInfo by homeScreenViewModel.partyinfo.collectAsState()
     val voteInfo by homeScreenViewModel.voteinfo.collectAsState()
+    //val selectedDistrict by homeScreenViewModel.selectedDistrict.collectAsState()
 
     Log.i("voteInfo", voteInfo.toString())
+    LaunchedEffect(selectedDistrict) {
+        homeScreenViewModel.selectDistrict(selectedDistrict)
+        // Trigger any other actions needed when district changes
+    }
 
     // Update the votes when a district is selected
-    LaunchedEffect(selectedDistrict) {
-        voteInfo
-    }
-    Column {
+    //LaunchedEffect(selectedDistrict) {
+    //    voteInfo.voteinfoes.map {  }
+    //}
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize() // This ensures the Column takes up the available space
+    ) {
         DistrictDropdown(selectedDistrict = selectedDistrict) { newSelection ->
             selectedDistrict = newSelection
         }
-        // Component that displays votes
-        VoteList(voteList = voteInfo.voteinfoes.map { Vote(it.key, it.value) })
-        LazyColumn {
-            items(partyInfo.partyinfoes) { partyInfo ->
-                partyInfo.parties.forEach { party ->
-                    PartyCard(party = Party(
-                        party.id,
-                        party.name,
-                        party.leader,
-                        party.img,
-                        party.color,
-                        party.description
-                    ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        onClick = {
-                            navController.navigate("party_screen/${party.id}")
-                            Log.d(
-                                "PartyScreen",
-                                "Navigating to PartyScreen with partyID: ${party.id}"
-                            )
-                        })
+            // Component that displays votes
+            //VoteList(voteList = voteInfo.voteinfoes.map { Vote(it.key, it.value) })
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f) // This makes LazyColumn take up the remaining space
+            ) {
+                items(voteInfo.voteinfoes.map {
+                    Vote(it.key, it.value)
+                }) { vote ->
+                    VoteRow(vote = vote)
+                }
+
+                items(partyInfo.partyinfoes) { partyInfo ->
+                    partyInfo.parties.forEach { party ->
+                        PartyCard(party = Party(
+                            party.id,
+                            party.name,
+                            party.leader,
+                            party.img,
+                            party.color,
+                            party.description
+                        ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            onClick = {
+                                navController.navigate("party_screen/${party.id}")
+                                Log.d(
+                                    "PartyScreen",
+                                    "Navigating to PartyScreen with partyID: ${party.id}"
+                                )
+                            })
+                    }
                 }
             }
         }
-
     }
-}
+
 @Composable
 fun PartyCard(
     party: Party,
@@ -166,6 +185,7 @@ fun DistrictDropdown(
     onSelectionChanged: (District) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
+    val districts = listOf(District.DISTRICT1, District.DISTRICT2, District.DISTRICT3)
 
     Row(modifier = Modifier
         .fillMaxWidth()
@@ -173,12 +193,13 @@ fun DistrictDropdown(
         Material3Text(text = "Select District:")
         Spacer(modifier = Modifier.width(8.dp))
         Box {
-            Material3Text(text = selectedDistrict.name, modifier = Modifier.clickable { expanded = true })
+            Material3Text(text = selectedDistrict.name,
+                modifier = Modifier.clickable { expanded = true })
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {
-                District.values().forEach { district ->
+                districts.forEach { district ->
                     DropdownMenuItem(onClick = {
                         onSelectionChanged(district)
                         expanded = false
