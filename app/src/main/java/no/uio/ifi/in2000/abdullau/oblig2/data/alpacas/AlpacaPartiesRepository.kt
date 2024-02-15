@@ -36,12 +36,15 @@ class AlpacaPartiesRepository() {
     suspend fun getPartiesWithVotes(district: District): Map<String,Int> {
         val parties = getParties().flatMap { it.parties }
         val votesMap = mutableMapOf<String, Int>()
-        val votes = votesRepository.getVotesForPartyInDistrict(district,"1")
+        //val votes = votesRepository.getVotesForPartyInDistrict(district, "1")
+        val partyIdToNameMap = parties.associate { it.id to it.name }
         Log.i("Parties",parties.toString())
-        Log.i("Votes: ", votes.toString())
-         parties.forEach { party ->
-             val votes = votesRepository.getVotesForPartyInDistrict(district,"1")
-             votesMap[party.name] = votes
+        //Log.i("Votes: ", votes.toString())
+        partyIdToNameMap.forEach { (partyId,partyName) ->
+             //val votes = votesRepository.getVotesForPartyInDistrict(district,"1")
+            val partyVotes = votesRepository.getVotesForPartyInDistrict(district, partyId)
+             votesMap[partyName] = partyVotes
+             Log.i("VotesMap", votesMap.toString())
             }
         return votesMap.toMap()
         }
