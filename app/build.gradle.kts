@@ -55,6 +55,7 @@ android {
 
 dependencies {
     val ktor_version: String by project
+    implementation("androidx.compose.runtime:runtime-livedata:<compose_version>")
     implementation("io.ktor:ktor-client-core:$ktor_version")
     implementation("io.ktor:ktor-client-serialization:$ktor_version")
     implementation("io.ktor:ktor-client-json:$ktor_version") // For JSON serialization
@@ -84,5 +85,6 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+
 }
 
