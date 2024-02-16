@@ -20,6 +20,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -49,6 +50,7 @@ fun PartyScreen(
     navController: NavController
 ) {
     val partyi by partyScreenViewModel.observeSelectedParty().collectAsState()
+    val errorMessage1 by partyScreenViewModel.errorMessage.collectAsState()
 
     LaunchedEffect(Unit) {
         partyScreenViewModel.loadPartybyID(partyID)
@@ -124,4 +126,26 @@ fun PartyScreen(
 
     }
 
+}
+
+
+@Composable
+fun ErrorMessage(errorMessage: String?){
+    if(!errorMessage.isNullOrEmpty()){
+        Spacer(modifier = Modifier.padding(150.dp))
+        OutlinedCard(modifier = Modifier.padding(16.dp)) {
+            Column(modifier = Modifier.padding(start = 50.dp, end = 50.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = errorMessage,
+                    color = Color.Red,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp))
+
+            }
+
+        }
+    }
 }

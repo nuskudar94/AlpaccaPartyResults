@@ -16,6 +16,7 @@ import android.os.Build
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -39,12 +40,14 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.material3.Text as Material3Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -111,8 +114,9 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = viewModel(),
     val coroutineScope = rememberCoroutineScope()
     //val isNetworkAvailable by networkStatusViewModel.networkStatus.observeAsState(initial = true)
 
+    val errorMessage by homeScreenViewModel.errorMessage.collectAsState()
     val isNetworkAvailable by networkStatusFlow(context).collectAsState(initial = true)
-
+    /*
     LaunchedEffect(isNetworkAvailable) {
         if (!isNetworkAvailable) {
             coroutineScope.launch {
@@ -121,13 +125,14 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = viewModel(),
         }
     }
 
+     */
+
     Log.i("voteInfo", voteInfo.toString())
     LaunchedEffect(selectedDistrict) {
         homeScreenViewModel.selectDistrict(selectedDistrict)
 
 
     }
-
 
 
     Scaffold(
@@ -138,16 +143,17 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = viewModel(),
                 icon = { Icon(Icons.Filled.Info, contentDescription = "") },
                 onClick = {
 
-                        Log.i("IsNetworkAvailable", isNetworkAvailable.toString())
-                        coroutineScope.launch {
-                            snackbarHostState.showSnackbar(message = "No internet connection")
+                    Log.i("IsNetworkAvailable", isNetworkAvailable.toString())
+                    coroutineScope.launch {
+                        snackbarHostState.showSnackbar(message = "No internet connection")
 
-                        }
+                    }
 
                 }
             )
         }
-    ) {contentPadding ->
+    ) { contentPadding ->
+
 
         Column(
             modifier = Modifier
@@ -190,13 +196,18 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = viewModel(),
                             })
                     }
                 }
+                item {
+                    ErrorMessage(errorMessage = errorMessage)
+                }
+
             }
+
         }
 
     }
 
-
 }
+
 /*
 fun isNetworkAvailable(context: Context): Boolean {
     val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -219,6 +230,26 @@ fun isNetworkAvailable(context: Context): Boolean {
 
  */
 
+@Composable
+fun ErrorMessage(errorMessage: String?){
+    if(!errorMessage.isNullOrEmpty()){
+        Spacer(modifier = Modifier.padding(150.dp))
+        OutlinedCard(modifier = Modifier.padding(16.dp)) {
+            Column(modifier = Modifier.padding(start = 50.dp, end = 50.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = errorMessage,
+                    color = Color.Red,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp))
+
+            }
+
+        }
+    }
+}
 
 @Composable
 fun PartyCard(

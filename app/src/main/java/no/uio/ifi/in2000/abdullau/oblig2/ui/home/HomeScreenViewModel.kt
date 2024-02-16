@@ -36,14 +36,20 @@ class HomeScreenViewModel: ViewModel() {
     private val _selectedDistrict = MutableStateFlow<District?>(null)
     val selectedDistrict: StateFlow<District?> = _selectedDistrict.asStateFlow()
 
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
 
     fun loadPartyVotes(district: District) {
         viewModelScope.launch {
-            val votesMap=repository.getPartiesWithVotes(district)
-            _voteInfo.update {
-                    currentState-> currentState.copy(
-                voteinfoes = votesMap
-            )
+            try {
+                val votesMap=repository.getPartiesWithVotes(district)
+                _voteInfo.update {
+                        currentState-> currentState.copy(
+                    voteinfoes = votesMap)
+            }
+            }   catch (e: Exception){
+                Log.e("LoadPartyVotes", "Hata olustu ${e.message}")
+                _errorMessage.value = "There is a problem !"
             }
         }
     }
@@ -54,11 +60,17 @@ class HomeScreenViewModel: ViewModel() {
 
     init {
         viewModelScope.launch{
-            _partyInfo.update { partyinfoUiState ->
-                partyinfoUiState.copy(
-                    partyinfoes = repository.getParties()
-                )
+            try {
+                _partyInfo.update { partyinfoUiState ->
+                    partyinfoUiState.copy(
+                        partyinfoes = repository.getParties()
+                    )
+                }
+            } catch (e: Exception){
+                Log.e("LoadPartyVotes", "Hata olustu ${e.message}")
+                _errorMessage.value = "There is a problem!"
             }
+
         }
 
     }
